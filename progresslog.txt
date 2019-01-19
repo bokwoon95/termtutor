@@ -1,1 +1,23 @@
-Initial Commit
+How do I find julia.h? Can't work for both C and Go.
+    /usr/local/julia/share/julia/julia-config.jl --cflags --ldflags --ldlibs | xargs cc julia.c
+    generated C flags: 
+-std=gnu99 -I'/Applications/Julia-1.0.app/Contents/Resources/julia/include/julia' -DJULIA_ENABLE_THREADING=1 -fPIC
+-L'/Applications/Julia-1.0.app/Contents/Resources/julia/lib' -Wl,-rpath,'/Applications/Julia-1.0.app/Contents/Resources/julia/lib' -Wl,-rpath,'/Applications/Julia-1.0.app/Contents/Resources/julia/lib/julia' -ljulia
+
+Got a go program to interpet Julia code, but if I input any invalid julia code it fails silently (i.e. the exceptions are not printed). The julia manual mentions that you can check for and print any exceptions with
+	if jl_exception_occurred() {
+		// printf("%s \n", jl_typeof_str(jl_exception_occurred()));
+	}
+but I just get an error while compiling that `jl_exception_occurred` is undefined.
+	julia/julia.go:32:5: undefined: jl_exception_occurred
+
+    Figured it out, I need to prepend every call to jl_... function with C. because that's where namespace where the functions are located. Now I get a different error:
+    non-bool _Cfunc_jl_exception_occurred() (type *_Ctype_struct__jl_value_t) used as if condition
+    - Go obviously doesn't handle booleans loosely like C, where only 0 and null are false and everything else is true. However I can't figure out what is the return type of C.jl_exception_occurred() is supposed to be, so that I can check for the exception status.
+
+    I encountered another problem: go programs may cross compile on my computer but will it include a portable version of the Julia binary? It's a deal breaker if I have to ask the end user to install Julia on their computer as well, this is supposed to be a batteries-included solution.
+    Instead, I will explore using the github.com/robertkrimen/otto package which is a javascript parser and interpeter written natively in Go. Which means it can definitely cross-compile to a standalone binary as a final result.
+
+tview works, otto works. Now I need to figure out how to take in a user input via tview and pass it into otto then print the result.
+    I can't figure out how to enter arbitrary text into tview's flexboxes. None of their flexbox functions pertain to adding text, which leads me to think that you're supposed to add text with native go or tcell. But how, /I don't know/. If i'm defining everything in terms of tview widgets how do I call go's fmt.Scanf for a particular widget?
+    Even more worryingly, there doesn't seem to be a multi-line field, only one-line form fields. I want the user to enter text, but not into a special form. I want them to add text into their own.
