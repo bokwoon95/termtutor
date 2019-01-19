@@ -37,5 +37,12 @@ Tentatively here's the UI structure: Focus will be split between two modes, 'les
 
 ✗ Create a view called 'interpreter' which acts as a basic js interpreter.
     It simply passes user input to the otto js VM and prints the results that the js VM spits out.
+◦ Basic repl set up, but values do not seem to be printed to the right window.
+    If I define a function add(x,y) {return x+y}, calling add(3,4) prints nothing. But if I instead say function add(x,y) {console.log(x+y)}, the values get printed in the repl_textbox, not the repl_window.
+    What's worse is that I seem to have no control over the console.logged string; clearing the repl_textbox does not seem to clear the console.logged string, and so I also have no way to extract them and dump them to the repl_window as a hacky workaround.
+        I think it's because the console.log happens after the enter event is finished, so nothing I do in the enter event handler will affect the console.log string.
+        • I've spent a few hours on this problem and I can't solve it. No matter what, the gocui API only provides 'view.clear()' to clear a view buffer and if that doesn't work, I'm fucked. I simply have no control over the behavior of otto's console.log and it seems like it blatantly ignores any view semantics of gocui.
+            • console.log is well and truly borked, can I even claim that it can teach javascript it can't even print strings?
+            • Investigating tcell now. It is VERY low level, I don't even know how events are being intercepted.
 
 ✗ Create two side-by-side views. The first one view prints an uneditable paragraph, the second view allows the user to write anything in the buffer. Each time the user presses Enter, the first view prints another paragraph, properly aligned with where the user's cursor is in the second view buffer.

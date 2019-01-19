@@ -1,9 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/jroimartin/gocui"
+	"github.com/robertkrimen/otto"
+)
+
+var (
+	vm = otto.New()
 )
 
 func main() {
@@ -32,8 +38,9 @@ func layout(g *gocui.Gui) error {
 			return err
 		}
 		v.Title = "repl_window"
-		v.Editable = true
+		v.Editable = false
 		v.Wrap = true
+		v.Autoscroll = true
 		if _, err = setCurrentViewOnTop(g, "repl_window"); err != nil {
 			return err
 		}
@@ -60,14 +67,58 @@ func initKeybindings(g *gocui.Gui) error {
 	if err := g.SetKeybinding("", gocui.KeyCtrlD, gocui.ModNone, quit); err != nil {
 		log.Panicln(err)
 	}
+
+	// repl_textbox
+	if err := g.SetKeybinding("repl_textbox", gocui.KeyEnter, gocui.ModNone, eval_repltextbox); err != nil {
+		log.Panicln(err)
+	}
+	if err := g.SetKeybinding("repl_textbox", gocui.KeyCtrlO, gocui.ModNone, fillO); err != nil {
+		log.Panicln(err)
+	}
+	if err := g.SetKeybinding("repl_textbox", gocui.KeyCtrlU, gocui.ModNone, clear_repltextbox); err != nil {
+		log.Panicln(err)
+	}
+
 	return nil
 }
 
 // Handler functions
+// All views
 func quit(g *gocui.Gui, v *gocui.View) error {
 	return gocui.ErrQuit
 }
-// Handler functions
+
+// repl_textbox
+func eval_repltextbox(g *gocui.Gui, v *gocui.View) error {
+	repl_window, _ := g.View("repl_window")
+	fmt.Fprintln(repl_window, "eval_repltextbox() triggered")
+	cmd := v.Buffer()
+	v.SetCursor(0, 0)
+	v.Clear()
+	if cmd != "" {
+		fmt.Fprintln(repl_window, "> "+cmd)
+		v.SetOrigin(0, 0)
+		v.SetCursor(0, 0)
+		v.Clear()
+		value, err := vm.Eval(cmd)
+		fmt.Fprintln(repl_window, value)
+		if err != nil {
+			fmt.Fprintln(repl_window, err)
+		}
+	}
+	return nil
+}
+func fillO(g *gocui.Gui, v *gocui.View) error {
+	fmt.Fprintf(v, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+	return nil
+}
+func clear_repltextbox(g *gocui.Gui, v *gocui.View) error {
+	v.SetCursor(0, 0)
+	v.Clear()
+	return nil
+}
+
+// End Handler functions
 
 // Helper functions
 func setCurrentViewOnTop(g *gocui.Gui, name string) (*gocui.View, error) {
@@ -76,4 +127,5 @@ func setCurrentViewOnTop(g *gocui.Gui, name string) (*gocui.View, error) {
 	}
 	return g.SetViewOnTop(name)
 }
-// Helper functions
+
+// End Helper functions
