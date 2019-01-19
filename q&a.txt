@@ -1,0 +1,51 @@
+Is this a string?
+"peanut butter"
+-
+yes, anything enclosed in double quotes " is a string
+
+Is this a string?
+1978
+-
+No, it is a number
+
+What is the result of this?
+2 + 2
+-
+4, it's basic math
+
+Is this a string?
+"2 + 2"
+-
+Yes, because it has double quotes surrounding it
+
+How do we know for sure if it's a string or number?
+-
+We can check it using typeof like this: typeof("2 + 2")
+and like this: typeof(2 + 2)
+>>> TRY
+
+What about this?
+foo
+-
+It is not a string. It is also not a number. We don't know what this is.
+
+What about now?
+foo = 34
+-
+Now we see that foo is a number
+
+foo = "bar"
+-
+Now foo is a string.
+We can see that depending on what is assigned to foo using the `=` symbol, foo contains different values. We say that foo is a variable.
+
+What is 'bread'?
+peanut = 3
+butter = 4
+bread = peanut + butter + 1
+-
+bread is 8
+
+how do I display a string?
+-
+what does display mean?

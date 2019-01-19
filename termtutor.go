@@ -12,6 +12,8 @@ var (
 	vm = otto.New()
 	rarr = []rune("")
 	rarrp = 0
+	mode = 1
+	replm = 1
 )
 
 func main() {
@@ -56,6 +58,28 @@ func layout(g *gocui.Gui) error {
 		v.Editable = true
 		v.Wrap = true
 		if _, err = setCurrentViewOnTop(g, "repl_textbox"); err != nil {
+			return err
+		}
+	}
+	if v, err := g.SetView("questions", 0, 0, maxX/2-1, maxY-1); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Title = "questions"
+		v.Editable = true
+		v.Wrap = true
+		if _, err = setCurrentViewOnTop(g, "questions"); err != nil {
+			return err
+		}
+	}
+	if v, err := g.SetView("answers", maxX/2, 0, maxX-1, maxY-1); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Title = "answers"
+		v.Editable = true
+		v.Wrap = true
+		if _, err = setCurrentViewOnTop(g, "answers"); err != nil {
 			return err
 		}
 	}
@@ -129,10 +153,27 @@ func initKeybindings(g *gocui.Gui) error {
 	if err := g.SetKeybinding("repl_textbox", gocui.KeyCtrlU, gocui.ModNone, clear_repltextbox); err != nil {
 		log.Panicln(err)
 	}
+	// if err := g.SetKeybinding("repl_textbox", gocui.KeyTab, gocui.ModNone, togglereplm); err != nil {
+	// 	log.Panicln(err)
+	// }
+	// if err := g.SetKeybinding("repl_window", gocui.KeyTab, gocui.ModNone, togglereplm); err != nil {
+	// 	log.Panicln(err)
+	// }
+
+	// Swap modes
+	if err := g.SetKeybinding("repl_textbox", gocui.KeyCtrlQ, gocui.ModNone, switchlesson); err != nil {
+		log.Panicln(err)
+	}
+	if err := g.SetKeybinding("answers", gocui.KeyCtrlW, gocui.ModNone, switchrepl); err != nil {
+		log.Panicln(err)
+	}
 
 	// Handle all legal javascript characters
-	for _, c := range "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{};.=<>()[]'\"/\\-+!@#$%^&*~:" {
+	for _, c := range "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{};.=<>()[]'\"/\\-+!@#$%^&*~:," {
 		g.SetKeybinding("repl_textbox", c, gocui.ModNone, mkEvtHandler(c))
+	}
+	if err := g.SetKeybinding("repl_textbox", gocui.KeySpace, gocui.ModNone, mkEvtHandler(' ')); err != nil {
+		log.Panicln(err)
 	}
 	if err := g.SetKeybinding("repl_textbox", gocui.KeyBackspace, gocui.ModNone, backspace); err != nil {
 		log.Panicln(err)
@@ -180,5 +221,27 @@ func arrowright(g *gocui.Gui, v *gocui.View) error {
 	if rarrp < len(rarr)-1 {
 		rarrp += 1
 	}
+	return nil
+}
+func togglereplm(g *gocui.Gui, v *gocui.View) error {
+	if replm == 1 {
+		g.SetCurrentView("repl_window")
+		replm = 0
+	} else {
+		g.SetCurrentView("repl_textbox")
+		replm = 1
+	}
+	return nil
+}
+func switchlesson(g *gocui.Gui, v *gocui.View) error {
+	g.SetViewOnTop("questions")
+	g.SetViewOnTop("answers")
+	g.SetCurrentView("answers")
+	return nil
+}
+func switchrepl(g *gocui.Gui, v *gocui.View) error {
+	g.SetViewOnTop("repl_window")
+	g.SetViewOnTop("repl_textbox")
+	g.SetCurrentView("repl_textbox")
 	return nil
 }

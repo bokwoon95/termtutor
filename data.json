@@ -1,0 +1,42 @@
+[
+  {
+    "question": "Is this a string?\n\"peanut butter\"",
+    "answer": "yes, anything enclosed in double quotes \" is a string"
+  },
+  {
+    "question": "Is this a string?\n1978",
+    "answer": "No, it is a number"
+  },
+  {
+    "question": "What is the result of this?\n2 + 2",
+    "answer": "4, it's basic math"
+  },
+  {
+    "question": "Is this a string?\n\"2 + 2\"",
+    "answer": "Yes, because it has double quotes surrounding it"
+  },
+  {
+    "question": "How do we know for sure if it's a string or number?",
+    "answer": "We can check it using typeof like this: typeof(\"2 + 2\")\nand like this: typeof(2 + 2)\n>>> try it in the repl >>>"
+  },
+  {
+    "question": "What about this?\nfoo",
+    "answer": "It is not a string. It is also not a number. We don't know what this is."
+  },
+  {
+    "question": "What about now?\nfoo = 34",
+    "answer": "Now we see that foo is a number"
+  },
+  {
+    "question": "foo = \"bar\"",
+    "answer": "Now foo is a string.\nWe can see that depending on what is assigned to foo using the `=` symbol, foo contains different values. We say that foo is a variable."
+  },
+  {
+    "question": "What is 'bread'?\npeanut = 3\nbutter = 4\nbread = peanut + butter + 1",
+    "answer": "bread is 8"
+  },
+  {
+    "question": "how do I display a string?",
+    "answer": "what does display mean?"
+  }
+]
