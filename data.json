@@ -17,7 +17,7 @@
   },
   {
     "question": "How do we know for sure if it's a string or number?",
-    "answer": "We can check it using typeof like this: typeof(\"2 + 2\")\nand like this: typeof(2 + 2)\n>>> try it in the repl >>>"
+    "answer": "We can check it using typeof like this: typeof(\"2 + 2\")\nand like this: typeof(2 + 2)\n>>> Press Ctrl+W to try it in the repl <<<"
   },
   {
     "question": "What about this?\nfoo",
